@@ -1,9 +1,11 @@
 import { useDashboard } from '@/contexts/DashboardContext';
 import { FileUpload } from '@/components/FileUpload';
+import { ExcelTemplate } from '@/components/ExcelTemplate';
 import { KPICard } from '@/components/KPICard';
 import { CashFlowChart } from '@/components/CashFlowChart';
 import { SalesChart } from '@/components/SalesChart';
 import { ProgressChart } from '@/components/ProgressChart';
+import { FinancialProgressChart } from '@/components/FinancialProgressChart';
 import { GanttChart } from '@/components/GanttChart';
 import { DRETable } from '@/components/DRETable';
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,7 @@ import {
   calculateChartData, 
   calculateSalesChartData, 
   calculateProgressChartData,
+  calculateFinancialProgressChartData,
   calculateDREData,
   formatCurrency,
   formatPercentage,
@@ -40,15 +43,15 @@ export function Dashboard() {
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-3xl font-bold text-executive-text-primary">
-              PropVisio Dashboard
+              Via.One
             </h1>
             <p className="text-executive-text-secondary">
-              Painel de Viabilidade Financeira para Empreendimentos Imobiliários
+              Viabilidade Imobiliária Assistida
             </p>
           </div>
 
           {/* Upload and Demo */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <FileUpload onDataLoaded={(newData) => {
               setData(newData);
               if (newData.dados_mensais.length > 0) {
@@ -59,6 +62,8 @@ export function Dashboard() {
                 setFilters({ selectedMonth: sortedMonths[0] });
               }
             }} />
+            
+            <ExcelTemplate />
             
             <div className="space-y-4">
               <div className="text-center">
@@ -83,6 +88,7 @@ export function Dashboard() {
                   <li>• Fluxo de caixa projetado vs realizado</li>
                   <li>• 5 marcos de projeto com cronograma</li>
                   <li>• Avanços físico e financeiro</li>
+                  <li>• Metas de venda para projeções</li>
                 </ul>
               </div>
             </div>
@@ -98,6 +104,7 @@ export function Dashboard() {
   const salesData = calculateSalesChartData(data.dados_mensais);
   const progressPhysicalFinancial = calculateProgressChartData(data.dados_mensais);
   const progressPhysicalProjected = calculateProgressChartData(data.dados_mensais);
+  const financialProgressData = calculateFinancialProgressChartData(data.dados_mensais);
   const dreData = calculateDREData(data.dados_mensais, filters.showAccumulated);
 
   return (
@@ -108,10 +115,10 @@ export function Dashboard() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-xl font-bold text-executive-text-primary">
-                Viabilidade – Empreendimento Demo
+                Via.One – {data.projeto_info?.nome || 'Empreendimento Demo'}
               </h1>
               <p className="text-sm text-executive-text-secondary">
-                Painel Executivo para Investidores
+                Viabilidade Imobiliária Assistida {data.projeto_info?.versao && `v${data.projeto_info.versao}`}
               </p>
             </div>
             
@@ -228,12 +235,17 @@ export function Dashboard() {
           />
         </div>
 
-        {/* Charts Row 3 - Physical Progress and Gantt */}
+        {/* Charts Row 3 - Financial Progress and Physical Progress */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <FinancialProgressChart data={financialProgressData} />
           <ProgressChart 
             data={progressPhysicalProjected} 
             type="physical-projected"
           />
+        </div>
+
+        {/* Charts Row 4 - Gantt */}
+        <div className="grid grid-cols-1 gap-6">
           <GanttChart data={data.marcos_projeto || []} />
         </div>
 

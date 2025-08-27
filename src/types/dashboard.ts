@@ -18,6 +18,7 @@ export interface DadosMensais {
   avanco_fisico_perc?: number;
   avanco_fisico_proj?: number;
   avanco_financeiro_perc?: number;
+  avanco_financeiro_proj?: number;
   vendas_meta?: number;
 }
 
@@ -31,6 +32,13 @@ export interface MarcoProjeto {
 export interface ExcelData {
   dados_mensais: DadosMensais[];
   marcos_projeto?: MarcoProjeto[];
+  projeto_info?: {
+    nome?: string;
+    versao?: string;
+    vgv?: number;
+    responsavel?: string;
+    data_criacao?: string;
+  };
 }
 
 export interface KPICard {
@@ -49,6 +57,13 @@ export interface ChartDataPoint {
   realized?: number;
   value?: number;
   target?: number;
+  vendas?: number;
+  meta?: number;
+  fisico?: number;
+  financeiro?: number;
+  fisico_proj?: number;
+  financeiro_planejado?: number;
+  financeiro_realizado?: number;
 }
 
 export interface DashboardFilters {

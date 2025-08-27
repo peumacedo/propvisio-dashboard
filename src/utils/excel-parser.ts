@@ -273,5 +273,15 @@ export function generateMockData(): ExcelData {
     }
   ];
   
-  return { dados_mensais, marcos_projeto };
+  return { 
+    dados_mensais, 
+    marcos_projeto,
+    projeto_info: {
+      nome: 'Residencial Via Nova',
+      versao: '2.1',
+      vgv: 120000000,
+      responsavel: 'Equipe Via.One',
+      data_criacao: new Date().toLocaleDateString('pt-BR')
+    }
+  };
 }

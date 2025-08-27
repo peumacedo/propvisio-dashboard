@@ -169,6 +169,18 @@ export function calculateProgressChartData(data: DadosMensais[]) {
     }));
 }
 
+export function calculateFinancialProgressChartData(data: DadosMensais[]) {
+  if (!data || data.length === 0) return [];
+  
+  return data
+    .sort((a, b) => a.mes_ano.localeCompare(b.mes_ano))
+    .map(item => ({
+      month: item.mes_ano,
+      financeiro_planejado: item.avanco_financeiro_proj || 0,
+      financeiro_realizado: item.avanco_financeiro_perc || 0
+    }));
+}
+
 export function calculateDREData(data: DadosMensais[], showAccumulated: boolean) {
   if (!data || data.length === 0) return [];
   
