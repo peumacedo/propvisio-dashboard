@@ -24,13 +24,25 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				
+				// Brand Colors
+				brand: {
+					primary: 'hsl(var(--brand-primary))',
+					accent: 'hsl(var(--brand-accent))',
+					success: 'hsl(var(--brand-success))',
+					warning: 'hsl(var(--brand-warning))',
+					danger: 'hsl(var(--brand-danger))',
+				},
+				
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					hover: 'hsl(var(--primary-hover))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					foreground: 'hsl(var(--secondary-foreground))',
+					hover: 'hsl(var(--secondary-hover))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -51,6 +63,26 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				
+				// Executive Dashboard Colors
+				executive: {
+					bg: 'hsl(var(--executive-bg))',
+					card: 'hsl(var(--executive-card))',
+					'card-hover': 'hsl(var(--executive-card-hover))',
+					shadow: 'hsl(var(--executive-shadow))',
+					'text-primary': 'hsl(var(--executive-text-primary))',
+					'text-secondary': 'hsl(var(--executive-text-secondary))',
+					'text-accent': 'hsl(var(--executive-text-accent))'
+				},
+				
+				// Chart Colors
+				chart: {
+					projected: 'hsl(var(--chart-projected))',
+					realized: 'hsl(var(--chart-realized))',
+					positive: 'hsl(var(--chart-positive))',
+					negative: 'hsl(var(--chart-negative))',
+					neutral: 'hsl(var(--chart-neutral))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
