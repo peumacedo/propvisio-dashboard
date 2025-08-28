@@ -9,6 +9,7 @@ interface DashboardContextType {
   setFilters: (filters: Partial<DashboardFilters>) => void;
   loadMockData: () => void;
   availableMonths: string[];
+  dataHistory: ExcelData[];
 }
 
 const DashboardContext = createContext<DashboardContextType | null>(null);
@@ -19,6 +20,7 @@ interface DashboardProviderProps {
 
 export function DashboardProvider({ children }: DashboardProviderProps) {
   const [data, setData] = useState<ExcelData | null>(null);
+  const [dataHistory, setDataHistory] = useState<ExcelData[]>([]);
   const [filters, setFiltersState] = useState<DashboardFilters>({
     selectedMonth: '',
     showAccumulated: false
@@ -29,7 +31,23 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
   };
 
   const handleSetData = (newData: ExcelData) => {
+    // Add version info if not present
+    if (!newData.projeto_info?.versao) {
+      const versionNumber = dataHistory.length + 1;
+      newData.projeto_info = {
+        ...newData.projeto_info,
+        versao: versionNumber.toString(),
+        data_criacao: new Date().toISOString().split('T')[0]
+      };
+    }
+    
     setData(newData);
+    
+    // Add to history if it's a new version
+    const existingVersion = dataHistory.find(d => d.projeto_info?.versao === newData.projeto_info?.versao);
+    if (!existingVersion) {
+      setDataHistory(prev => [...prev, newData]);
+    }
     
     // Set default selected month to the latest month
     if (newData.dados_mensais.length > 0) {
@@ -57,7 +75,8 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
     setData: handleSetData,
     setFilters,
     loadMockData,
-    availableMonths
+    availableMonths,
+    dataHistory
   };
 
   return (

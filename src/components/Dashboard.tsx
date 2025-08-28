@@ -8,18 +8,25 @@ import { ProgressChart } from '@/components/ProgressChart';
 import { FinancialProgressChart } from '@/components/FinancialProgressChart';
 import { GanttChart } from '@/components/GanttChart';
 import { DRETable } from '@/components/DRETable';
+import { VersionComparison } from '@/components/VersionComparison';
+import { EnhancedKPICards } from '@/components/EnhancedKPICards';
+import { PatrimonialPosition } from '@/components/PatrimonialPosition';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   TrendingUp, 
   Building, 
   ShoppingCart, 
   Package, 
   AlertTriangle,
-  Database
+  Database,
+  BarChart3,
+  PieChart,
+  Target
 } from 'lucide-react';
 import { 
   calculateKPIs, 
@@ -34,7 +41,7 @@ import {
 } from '@/utils/calculations';
 
 export function Dashboard() {
-  const { data, filters, setData, setFilters, loadMockData, availableMonths } = useDashboard();
+  const { data, filters, setData, setFilters, loadMockData, availableMonths, dataHistory } = useDashboard();
 
   if (!data) {
     return (
@@ -172,90 +179,134 @@ export function Dashboard() {
       </div>
 
       <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-          <KPICard
-            title="Rentabilidade"
-            value={formatPercentage(kpis.rentabilidade.value)}
-            subtitle="Payback"
-            subvalue={`${kpis.rentabilidade.pa_meses} meses`}
-            isEstimated={kpis.rentabilidade.isEstimated}
-            trend={kpis.rentabilidade.value > 5 ? 'up' : kpis.rentabilidade.value < 2 ? 'down' : 'stable'}
-            icon={<TrendingUp className="w-8 h-8" />}
-          />
-          
-          <KPICard
-            title="VGV do Projeto"
-            value={formatCurrency(kpis.vgv.value)}
-            subtitle="% Vendido"
-            subvalue={formatPercentage(kpis.vgv.percentVendido)}
-            trend={kpis.vgv.percentVendido > 50 ? 'up' : kpis.vgv.percentVendido < 25 ? 'down' : 'stable'}
-            icon={<Building className="w-8 h-8" />}
-          />
-          
-          <KPICard
-            title="Vendas Acumuladas"
-            value={formatCurrency(kpis.vendasAcumuladas.valor)}
-            subtitle="Unidades"
-            subvalue={formatNumber(kpis.vendasAcumuladas.unidades)}
-            trend="up"
-            icon={<ShoppingCart className="w-8 h-8" />}
-          />
-          
-          <KPICard
-            title="Estoque Atual"
-            value={formatCurrency(kpis.estoque.valor)}
-            subtitle="Unidades"
-            subvalue={formatNumber(kpis.estoque.unidades)}
-            trend={kpis.estoque.unidades < 50 ? 'up' : 'down'}
-            icon={<Package className="w-8 h-8" />}
-          />
-          
-          <KPICard
-            title="Inadimplência"
-            value={formatPercentage(kpis.inadimplencia.percentual)}
-            subtitle="Valor"
-            subvalue={formatCurrency(kpis.inadimplencia.valor)}
-            trend={kpis.inadimplencia.percentual < 2 ? 'up' : 'down'}
-            icon={<AlertTriangle className="w-8 h-8" />}
-          />
-        </div>
+        <Tabs defaultValue="dashboard" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Dashboard Principal
+            </TabsTrigger>
+            <TabsTrigger value="enhanced" className="flex items-center gap-2">
+              <Target className="w-4 h-4" />
+              KPIs Avançados
+            </TabsTrigger>
+            <TabsTrigger value="patrimonial" className="flex items-center gap-2">
+              <PieChart className="w-4 h-4" />
+              Posição Patrimonial
+            </TabsTrigger>
+            <TabsTrigger value="comparison" className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Análise de Versões
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Charts Row 1 - Cash Flow */}
-        <div className="grid grid-cols-1 gap-6">
-          <CashFlowChart data={cashFlowData} />
-        </div>
+          <TabsContent value="dashboard" className="space-y-8">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+              <KPICard
+                title="Rentabilidade"
+                value={formatPercentage(kpis.rentabilidade.value)}
+                subtitle="Payback"
+                subvalue={`${kpis.rentabilidade.pa_meses} meses`}
+                isEstimated={kpis.rentabilidade.isEstimated}
+                trend={kpis.rentabilidade.value > 5 ? 'up' : kpis.rentabilidade.value < 2 ? 'down' : 'stable'}
+                icon={<TrendingUp className="w-8 h-8" />}
+              />
+              
+              <KPICard
+                title="VGV do Projeto"
+                value={formatCurrency(kpis.vgv.value)}
+                subtitle="% Vendido"
+                subvalue={formatPercentage(kpis.vgv.percentVendido)}
+                trend={kpis.vgv.percentVendido > 50 ? 'up' : kpis.vgv.percentVendido < 25 ? 'down' : 'stable'}
+                icon={<Building className="w-8 h-8" />}
+              />
+              
+              <KPICard
+                title="Vendas Acumuladas"
+                value={formatCurrency(kpis.vendasAcumuladas.valor)}
+                subtitle="Unidades"
+                subvalue={formatNumber(kpis.vendasAcumuladas.unidades)}
+                trend="up"
+                icon={<ShoppingCart className="w-8 h-8" />}
+              />
+              
+              <KPICard
+                title="Estoque Atual"
+                value={formatCurrency(kpis.estoque.valor)}
+                subtitle="Unidades"
+                subvalue={formatNumber(kpis.estoque.unidades)}
+                trend={kpis.estoque.unidades < 50 ? 'up' : 'down'}
+                icon={<Package className="w-8 h-8" />}
+              />
+              
+              <KPICard
+                title="Inadimplência"
+                value={formatPercentage(kpis.inadimplencia.percentual)}
+                subtitle="Valor"
+                subvalue={formatCurrency(kpis.inadimplencia.valor)}
+                trend={kpis.inadimplencia.percentual < 2 ? 'up' : 'down'}
+                icon={<AlertTriangle className="w-8 h-8" />}
+              />
+            </div>
 
-        {/* Charts Row 2 - Sales and Progress */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <SalesChart data={salesData} />
-          <ProgressChart 
-            data={progressPhysicalFinancial} 
-            type="physical-financial"
-          />
-        </div>
+            {/* Charts Row 1 - Cash Flow */}
+            <div className="grid grid-cols-1 gap-6">
+              <CashFlowChart data={cashFlowData} />
+            </div>
 
-        {/* Charts Row 3 - Financial Progress and Physical Progress */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <FinancialProgressChart data={financialProgressData} />
-          <ProgressChart 
-            data={progressPhysicalProjected} 
-            type="physical-projected"
-          />
-        </div>
+            {/* Charts Row 2 - Sales and Progress */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <SalesChart data={salesData} />
+              <ProgressChart 
+                data={progressPhysicalFinancial} 
+                type="physical-financial"
+              />
+            </div>
 
-        {/* Charts Row 4 - Gantt */}
-        <div className="grid grid-cols-1 gap-6">
-          <GanttChart data={data.marcos_projeto || []} />
-        </div>
+            {/* Charts Row 3 - Financial Progress and Physical Progress */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <FinancialProgressChart data={financialProgressData} />
+              <ProgressChart 
+                data={progressPhysicalProjected} 
+                type="physical-projected"
+              />
+            </div>
 
-        {/* DRE Table */}
-        <div className="grid grid-cols-1 gap-6">
-          <DRETable 
-            data={dreData} 
-            showAccumulated={filters.showAccumulated}
-          />
-        </div>
+            {/* Charts Row 4 - Gantt */}
+            <div className="grid grid-cols-1 gap-6">
+              <GanttChart data={data.marcos_projeto || []} />
+            </div>
+
+            {/* DRE Table */}
+            <div className="grid grid-cols-1 gap-6">
+              <DRETable 
+                data={dreData} 
+                showAccumulated={filters.showAccumulated}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="enhanced" className="space-y-8">
+            <EnhancedKPICards 
+              data={data} 
+              selectedMonth={filters.selectedMonth} 
+            />
+          </TabsContent>
+
+          <TabsContent value="patrimonial" className="space-y-8">
+            <PatrimonialPosition 
+              data={data} 
+              selectedMonth={filters.selectedMonth} 
+            />
+          </TabsContent>
+
+          <TabsContent value="comparison" className="space-y-8">
+            <VersionComparison 
+              data={dataHistory} 
+              currentData={data} 
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
