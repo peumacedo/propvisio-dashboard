@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { ExcelData, DashboardFilters, DadosMensais, MarcoProjeto } from '@/types/dashboard';
-import { generateMockData } from '@/utils/excel-parser';
+import { generateMockData, generateMultipleVersions } from '@/utils/excel-parser';
 
 interface DashboardContextType {
   data: ExcelData | null;
@@ -61,8 +61,11 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
   };
 
   const loadMockData = () => {
-    const mockData = generateMockData();
-    handleSetData(mockData);
+    const versions = generateMultipleVersions();
+    // Load all versions into history
+    setDataHistory(versions);
+    // Set current data to latest version
+    handleSetData(versions[versions.length - 1]);
   };
 
   const availableMonths = data?.dados_mensais

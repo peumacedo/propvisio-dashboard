@@ -285,3 +285,90 @@ export function generateMockData(): ExcelData {
     }
   };
 }
+
+// Generate multiple versions for comparison
+export function generateMultipleVersions(): ExcelData[] {
+  const versions = [
+    { version: '1.0', multiplier: 0.85, name: 'Versão Inicial', vgv: 100000000 },
+    { version: '2.0', multiplier: 0.95, name: 'Revisão Market', vgv: 115000000 },
+    { version: '2.1', multiplier: 1.0, name: 'Residencial Via Nova', vgv: 120000000 }
+  ];
+
+  return versions.map((v, versionIndex) => {
+    const months = [
+      '2025-01', '2025-02', '2025-03', '2025-04', 
+      '2025-05', '2025-06', '2025-07', '2025-08'
+    ];
+    
+    const dados_mensais: DadosMensais[] = months.map((month, index) => {
+      const baseVendas = (3500000 + (index * 500000)) * v.multiplier;
+      const baseFluxo = (-800000 + (index * 300000)) * v.multiplier;
+      
+      return {
+        mes_ano: month,
+        rentabilidade_perc: (2.5 + (index * 0.2)) * v.multiplier,
+        pa_meses: Math.round((18 - index) * (v.multiplier + 0.1)),
+        vgv: v.vgv,
+        vendas_unid: Math.round((10 + (index * 2)) * v.multiplier),
+        vendas_valor: baseVendas,
+        estoque_unid: Math.round((90 - (index * 2)) * (2 - v.multiplier)),
+        estoque_valor: (45000000 - (index * 600000)) * v.multiplier,
+        inadimplencia_perc: (1.2 - (index * 0.1)) * (2 - v.multiplier),
+        inadimplencia_valor: (300000 - (index * 10000)) * (2 - v.multiplier),
+        contas_pagar: (4200000 - (index * 200000)) * v.multiplier,
+        contas_receber: (5200000 + (index * 100000)) * v.multiplier,
+        fluxo_proj: baseFluxo,
+        fluxo_real: baseFluxo + (Math.random() * 200000 - 100000),
+        avanco_fisico_perc: (index * 12.5) * v.multiplier,
+        avanco_fisico_proj: (index * 12.5 + 5) * v.multiplier,
+        avanco_financeiro_perc: (index * 10) * v.multiplier,
+        vendas_meta: baseVendas * 1.1,
+      };
+    });
+
+    const marcos_projeto: MarcoProjeto[] = [
+      {
+        marco: 'Lançamento do Projeto',
+        inicio: '2025-01-01',
+        fim: '2025-01-15',
+        status: versionIndex === 2 ? 'concluido' : 'planejado'
+      },
+      {
+        marco: 'Início das Obras',
+        inicio: '2025-02-01',
+        fim: '2025-02-28',
+        status: versionIndex >= 1 ? 'concluido' : 'planejado'
+      },
+      {
+        marco: '50% Vendido',
+        inicio: '2025-04-01',
+        fim: '2025-06-30',
+        status: versionIndex === 2 ? 'em_andamento' : 'planejado'
+      },
+      {
+        marco: 'Obra 80% Concluída',
+        inicio: '2025-08-01',
+        fim: '2025-10-31',
+        status: 'planejado'
+      },
+      {
+        marco: 'Habite-se',
+        inicio: '2025-11-01',
+        fim: '2025-12-31',
+        status: 'planejado'
+      }
+    ];
+
+    return {
+      dados_mensais,
+      marcos_projeto,
+      projeto_info: {
+        nome: v.name,
+        versao: v.version,
+        vgv: v.vgv,
+        responsavel: 'Equipe Via.One',
+        data_criacao: new Date(Date.now() - versionIndex * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
+      }
+    };
+  });
+}

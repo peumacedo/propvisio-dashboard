@@ -9,8 +9,10 @@ import { FinancialProgressChart } from '@/components/FinancialProgressChart';
 import { GanttChart } from '@/components/GanttChart';
 import { DRETable } from '@/components/DRETable';
 import { VersionComparison } from '@/components/VersionComparison';
+import { EnhancedVersionComparison } from '@/components/EnhancedVersionComparison';
 import { EnhancedKPICards } from '@/components/EnhancedKPICards';
 import { PatrimonialPosition } from '@/components/PatrimonialPosition';
+import { HoldingPanel } from '@/components/HoldingPanel';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -26,7 +28,8 @@ import {
   Database,
   BarChart3,
   PieChart,
-  Target
+  Target,
+  Building2
 } from 'lucide-react';
 import { 
   calculateKPIs, 
@@ -180,7 +183,7 @@ export function Dashboard() {
 
       <div className="container mx-auto px-4 py-8 space-y-8">
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Dashboard Principal
@@ -196,6 +199,10 @@ export function Dashboard() {
             <TabsTrigger value="comparison" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Análise de Versões
+            </TabsTrigger>
+            <TabsTrigger value="holding" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Visão Holding
             </TabsTrigger>
           </TabsList>
 
@@ -301,10 +308,14 @@ export function Dashboard() {
           </TabsContent>
 
           <TabsContent value="comparison" className="space-y-8">
-            <VersionComparison 
+            <EnhancedVersionComparison 
               data={dataHistory} 
               currentData={data} 
             />
+          </TabsContent>
+
+          <TabsContent value="holding" className="space-y-8">
+            <HoldingPanel projects={dataHistory} />
           </TabsContent>
         </Tabs>
       </div>
