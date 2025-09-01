@@ -12,6 +12,7 @@ interface KPICardProps {
   isEstimated?: boolean;
   className?: string;
   icon?: React.ReactNode;
+  previousMonthVariation?: number; // Percentage variation from previous month
 }
 
 const TrendIcon = ({ trend }: { trend?: 'up' | 'down' | 'stable' }) => {
@@ -28,7 +29,8 @@ export function KPICard({
   trend,
   isEstimated = false,
   className,
-  icon
+  icon,
+  previousMonthVariation
 }: KPICardProps) {
   return (
     <Card className={cn(
@@ -54,7 +56,21 @@ export function KPICard({
               <p className="text-2xl font-bold text-executive-text-primary">
                 {value}
               </p>
-              <TrendIcon trend={trend} />
+              <div className="flex items-center gap-1">
+                <TrendIcon trend={trend} />
+                {previousMonthVariation !== undefined && (
+                  <span className={cn(
+                    "text-xs font-medium px-2 py-1 rounded-full",
+                    previousMonthVariation > 0 
+                      ? "text-chart-positive bg-chart-positive/10" 
+                      : previousMonthVariation < 0 
+                        ? "text-chart-negative bg-chart-negative/10"
+                        : "text-chart-neutral bg-chart-neutral/10"
+                  )}>
+                    {previousMonthVariation > 0 ? '+' : ''}{previousMonthVariation.toFixed(1)}%
+                  </span>
+                )}
+              </div>
             </div>
             
             {subtitle && subvalue && (

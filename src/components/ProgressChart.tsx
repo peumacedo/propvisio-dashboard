@@ -65,6 +65,17 @@ export function ProgressChart({ data, title, type }: ProgressChartProps) {
               <Tooltip content={(props) => <CustomTooltip {...props} type={type} />} />
               <Legend />
               
+              {/* PA Reference Line */}
+              <Line 
+                type="monotone" 
+                dataKey="pa_reference" 
+                stroke="hsl(var(--chart-reference))"
+                strokeDasharray="8 4"
+                strokeWidth={2}
+                name="PA (Referência)"
+                dot={false}
+              />
+              
               <Line 
                 type="monotone" 
                 dataKey="fisico" 

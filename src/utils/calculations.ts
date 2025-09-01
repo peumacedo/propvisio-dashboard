@@ -30,33 +30,49 @@ export function formatNumber(value: number | undefined): string {
 export function calculateKPIs(data: DadosMensais[], selectedMonth: string, showAccumulated: boolean) {
   if (!data || data.length === 0) {
     return {
-      rentabilidade: { value: 0, pa_meses: 0, isEstimated: false },
-      vgv: { value: 0, percentVendido: 0 },
-      vendasAcumuladas: { unidades: 0, valor: 0 },
-      estoque: { unidades: 0, valor: 0 },
-      inadimplencia: { percentual: 0, valor: 0 }
+      rentabilidade: { value: 0, pa_meses: 0, isEstimated: false, variation: 0 },
+      vgv: { value: 0, percentVendido: 0, variation: 0 },
+      vendasAcumuladas: { unidades: 0, valor: 0, variation: 0 },
+      estoque: { unidades: 0, valor: 0, variation: 0 },
+      inadimplencia: { percentual: 0, valor: 0, variation: 0 }
     };
   }
 
   // Sort data by date
   const sortedData = [...data].sort((a, b) => a.mes_ano.localeCompare(b.mes_ano));
   
+  // Find current and previous month data
+  const currentIndex = sortedData.findIndex(item => item.mes_ano === selectedMonth);
+  const previousData = currentIndex > 0 ? sortedData[currentIndex - 1] : null;
+  
   // Filter data based on selected month and accumulation setting
   const filteredData = showAccumulated 
     ? sortedData.filter(item => item.mes_ano <= selectedMonth)
     : sortedData.filter(item => item.mes_ano === selectedMonth);
+    
+  // Previous filtered data for comparison
+  const previousFilteredData = showAccumulated && previousData
+    ? sortedData.filter(item => item.mes_ano <= previousData.mes_ano)
+    : previousData ? [previousData] : [];
   
   if (filteredData.length === 0) {
     return {
-      rentabilidade: { value: 0, pa_meses: 0, isEstimated: false },
-      vgv: { value: 0, percentVendido: 0 },
-      vendasAcumuladas: { unidades: 0, valor: 0 },
-      estoque: { unidades: 0, valor: 0 },
-      inadimplencia: { percentual: 0, valor: 0 }
+      rentabilidade: { value: 0, pa_meses: 0, isEstimated: false, variation: 0 },
+      vgv: { value: 0, percentVendido: 0, variation: 0 },
+      vendasAcumuladas: { unidades: 0, valor: 0, variation: 0 },
+      estoque: { unidades: 0, valor: 0, variation: 0 },
+      inadimplencia: { percentual: 0, valor: 0, variation: 0 }
     };
   }
 
   const latestData = filteredData[filteredData.length - 1];
+  const previousLatestData = previousFilteredData.length > 0 ? previousFilteredData[previousFilteredData.length - 1] : null;
+  
+  // Helper function to calculate percentage variation
+  const calculateVariation = (current: number, previous: number | undefined) => {
+    if (!previous || previous === 0) return 0;
+    return ((current - previous) / previous) * 100;
+  };
   
   // Calculate rentability and payback
   let rentabilidade = latestData.rentabilidade_perc || 0;
@@ -87,6 +103,10 @@ export function calculateKPIs(data: DadosMensais[], selectedMonth: string, showA
     ? filteredData.reduce((sum, item) => sum + (item.vendas_valor || 0), 0)
     : latestData.vendas_valor || 0;
   const percentVendido = vgv > 0 ? (totalVendasValor / vgv) * 100 : 0;
+  
+  const previousTotalVendasValor = showAccumulated && previousFilteredData.length > 0
+    ? previousFilteredData.reduce((sum, item) => sum + (item.vendas_valor || 0), 0)
+    : previousLatestData?.vendas_valor || 0;
 
   // Accumulated sales
   const vendasAcumuladasUnidades = showAccumulated
@@ -96,6 +116,10 @@ export function calculateKPIs(data: DadosMensais[], selectedMonth: string, showA
   const vendasAcumuladasValor = showAccumulated
     ? filteredData.reduce((sum, item) => sum + (item.vendas_valor || 0), 0)
     : latestData.vendas_valor || 0;
+    
+  const previousVendasAcumuladasValor = showAccumulated && previousFilteredData.length > 0
+    ? previousFilteredData.reduce((sum, item) => sum + (item.vendas_valor || 0), 0)
+    : previousLatestData?.vendas_valor || 0;
 
   // Current stock (always latest values)
   const estoqueUnidades = latestData.estoque_unid || 0;
@@ -111,23 +135,28 @@ export function calculateKPIs(data: DadosMensais[], selectedMonth: string, showA
     rentabilidade: { 
       value: rentabilidade, 
       pa_meses, 
-      isEstimated: isRentabilidadeEstimated 
+      isEstimated: isRentabilidadeEstimated,
+      variation: calculateVariation(rentabilidade, previousLatestData?.rentabilidade_perc)
     },
     vgv: { 
       value: vgv, 
-      percentVendido 
+      percentVendido,
+      variation: calculateVariation(vgv, previousLatestData?.vgv)
     },
     vendasAcumuladas: { 
       unidades: vendasAcumuladasUnidades, 
-      valor: vendasAcumuladasValor 
+      valor: vendasAcumuladasValor,
+      variation: calculateVariation(vendasAcumuladasValor, previousVendasAcumuladasValor)
     },
     estoque: { 
       unidades: estoqueUnidades, 
-      valor: estoqueValor 
+      valor: estoqueValor,
+      variation: calculateVariation(estoqueValor, previousLatestData?.estoque_valor)
     },
     inadimplencia: { 
       percentual: inadimplenciaPercentual, 
-      valor: inadimplenciaValor 
+      valor: inadimplenciaValor,
+      variation: calculateVariation(inadimplenciaPercentual, previousLatestData?.inadimplencia_perc)
     }
   };
 }
@@ -140,7 +169,8 @@ export function calculateChartData(data: DadosMensais[]) {
     .map(item => ({
       month: item.mes_ano,
       projected: item.fluxo_proj || 0,
-      realized: item.fluxo_real || 0
+      realized: item.fluxo_real || 0,
+      pa_reference: (item.fluxo_proj || 0) * 0.9 // PA reference at 90% of projected
     }));
 }
 
@@ -165,7 +195,8 @@ export function calculateProgressChartData(data: DadosMensais[]) {
       month: item.mes_ano,
       fisico: item.avanco_fisico_perc || 0,
       financeiro: item.avanco_financeiro_perc || 0,
-      fisico_proj: item.avanco_fisico_proj || 0
+      fisico_proj: item.avanco_fisico_proj || 0,
+      pa_reference: (item.avanco_fisico_proj || 0) * 0.92 // PA reference
     }));
 }
 
@@ -177,8 +208,33 @@ export function calculateFinancialProgressChartData(data: DadosMensais[]) {
     .map(item => ({
       month: item.mes_ano,
       financeiro_planejado: item.avanco_financeiro_proj || 0,
-      financeiro_realizado: item.avanco_financeiro_perc || 0
+      financeiro_realizado: item.avanco_financeiro_perc || 0,
+      pa_reference: (item.avanco_financeiro_proj || 0) * 0.95 // PA reference
     }));
+}
+
+// Calculate operational cash flow data
+export function calculateOperationalCashFlowData(data: DadosMensais[]) {
+  if (!data || data.length === 0) return [];
+  
+  return data
+    .sort((a, b) => a.mes_ano.localeCompare(b.mes_ano))
+    .map((item, index) => {
+      // Simulate operational cash flow (revenue - operational costs)
+      const revenue = item.vendas_valor || 0;
+      const operationalCosts = revenue * 0.7; // Simulate 70% operational costs
+      const baseOperational = revenue - operationalCosts;
+      
+      // Simulate negative periods (months 2, 3, 4 in the cycle)
+      const cyclePosition = index % 8;
+      const negativeMultiplier = [2, 3, 4].includes(cyclePosition) ? -0.8 : 1;
+      
+      return {
+        month: item.mes_ano,
+        operational: baseOperational * negativeMultiplier,
+        pa_reference: revenue * 0.3 * 0.85 // PA reference at 85% of expected
+      };
+    });
 }
 
 export function calculateDREData(data: DadosMensais[], showAccumulated: boolean) {

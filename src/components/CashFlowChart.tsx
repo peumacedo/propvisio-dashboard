@@ -51,6 +51,18 @@ export function CashFlowChart({ data, title = "Fluxo de Caixa" }: CashFlowChartP
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
+              
+              {/* PA Reference Line */}
+              <Line 
+                type="monotone" 
+                dataKey="pa_reference" 
+                stroke="hsl(var(--chart-reference))"
+                strokeDasharray="8 4"
+                strokeWidth={2}
+                name="PA (Referência)"
+                dot={false}
+              />
+              
               <Line 
                 type="monotone" 
                 dataKey="projected" 

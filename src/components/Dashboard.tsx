@@ -3,6 +3,7 @@ import { FileUpload } from '@/components/FileUpload';
 import { ExcelTemplate } from '@/components/ExcelTemplate';
 import { KPICard } from '@/components/KPICard';
 import { CashFlowChart } from '@/components/CashFlowChart';
+import { OperationalCashFlowChart } from '@/components/OperationalCashFlowChart';
 import { SalesChart } from '@/components/SalesChart';
 import { ProgressChart } from '@/components/ProgressChart';
 import { FinancialProgressChart } from '@/components/FinancialProgressChart';
@@ -34,6 +35,7 @@ import {
 import { 
   calculateKPIs, 
   calculateChartData, 
+  calculateOperationalCashFlowData,
   calculateSalesChartData, 
   calculateProgressChartData,
   calculateFinancialProgressChartData,
@@ -111,6 +113,7 @@ export function Dashboard() {
   // Calculate KPIs and chart data
   const kpis = calculateKPIs(data.dados_mensais, filters.selectedMonth, filters.showAccumulated);
   const cashFlowData = calculateChartData(data.dados_mensais);
+  const operationalCashFlowData = calculateOperationalCashFlowData(data.dados_mensais);
   const salesData = calculateSalesChartData(data.dados_mensais);
   const progressPhysicalFinancial = calculateProgressChartData(data.dados_mensais);
   const progressPhysicalProjected = calculateProgressChartData(data.dados_mensais);
@@ -217,6 +220,7 @@ export function Dashboard() {
                 isEstimated={kpis.rentabilidade.isEstimated}
                 trend={kpis.rentabilidade.value > 5 ? 'up' : kpis.rentabilidade.value < 2 ? 'down' : 'stable'}
                 icon={<TrendingUp className="w-8 h-8" />}
+                previousMonthVariation={kpis.rentabilidade.variation}
               />
               
               <KPICard
@@ -226,6 +230,7 @@ export function Dashboard() {
                 subvalue={formatPercentage(kpis.vgv.percentVendido)}
                 trend={kpis.vgv.percentVendido > 50 ? 'up' : kpis.vgv.percentVendido < 25 ? 'down' : 'stable'}
                 icon={<Building className="w-8 h-8" />}
+                previousMonthVariation={kpis.vgv.variation}
               />
               
               <KPICard
@@ -235,6 +240,7 @@ export function Dashboard() {
                 subvalue={formatNumber(kpis.vendasAcumuladas.unidades)}
                 trend="up"
                 icon={<ShoppingCart className="w-8 h-8" />}
+                previousMonthVariation={kpis.vendasAcumuladas.variation}
               />
               
               <KPICard
@@ -244,6 +250,7 @@ export function Dashboard() {
                 subvalue={formatNumber(kpis.estoque.unidades)}
                 trend={kpis.estoque.unidades < 50 ? 'up' : 'down'}
                 icon={<Package className="w-8 h-8" />}
+                previousMonthVariation={kpis.estoque.variation}
               />
               
               <KPICard
@@ -253,6 +260,7 @@ export function Dashboard() {
                 subvalue={formatCurrency(kpis.inadimplencia.valor)}
                 trend={kpis.inadimplencia.percentual < 2 ? 'up' : 'down'}
                 icon={<AlertTriangle className="w-8 h-8" />}
+                previousMonthVariation={kpis.inadimplencia.variation}
               />
             </div>
 
@@ -261,7 +269,12 @@ export function Dashboard() {
               <CashFlowChart data={cashFlowData} />
             </div>
 
-            {/* Charts Row 2 - Sales and Progress */}
+            {/* Charts Row 2 - Operational Cash Flow */}
+            <div className="grid grid-cols-1 gap-6">
+              <OperationalCashFlowChart data={operationalCashFlowData} />
+            </div>
+
+            {/* Charts Row 3 - Sales and Progress */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <SalesChart data={salesData} />
               <ProgressChart 
@@ -270,7 +283,7 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Charts Row 3 - Financial Progress and Physical Progress */}
+            {/* Charts Row 4 - Financial Progress and Physical Progress */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <FinancialProgressChart data={financialProgressData} />
               <ProgressChart 
@@ -279,7 +292,7 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Charts Row 4 - Gantt */}
+            {/* Charts Row 5 - Gantt */}
             <div className="grid grid-cols-1 gap-6">
               <GanttChart data={data.marcos_projeto || []} />
             </div>

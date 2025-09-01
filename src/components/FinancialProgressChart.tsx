@@ -61,6 +61,17 @@ export function FinancialProgressChart({ data, title = "Avanço Financeiro: Plan
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               
+              {/* PA Reference Line */}
+              <Line 
+                type="monotone" 
+                dataKey="pa_reference" 
+                stroke="hsl(var(--chart-reference))"
+                strokeDasharray="8 4"
+                strokeWidth={2}
+                name="PA (Referência)"
+                dot={false}
+              />
+              
               <Line 
                 type="monotone" 
                 dataKey="financeiro_planejado" 
