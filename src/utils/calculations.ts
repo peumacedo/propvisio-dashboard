@@ -1,31 +1,25 @@
 import { DadosMensais } from '@/types/dashboard';
-
-export function formatCurrency(value: number | undefined): string {
-  if (value === undefined || value === null) return 'N/A';
-  
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(value);
-}
-
-export function formatPercentage(value: number | undefined): string {
-  if (value === undefined || value === null) return 'N/A';
-  
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1
-  }).format(value / 100);
-}
-
-export function formatNumber(value: number | undefined): string {
-  if (value === undefined || value === null) return 'N/A';
-  
-  return new Intl.NumberFormat('pt-BR').format(value);
-}
+// Import the new enhanced financial calculations
+export { 
+  formatCurrency, 
+  formatPercentage, 
+  formatNumber,
+  calculateVPL,
+  calculateTIR,
+  calculateMTIR,
+  calculatePaybackDescontado,
+  calculateIL,
+  calculateExposicaoMaxima,
+  calculateCustoTerrenoVGV,
+  calculateCustoConstrucaoVGV,
+  calculateLucratividade,
+  calculatePrecoMedioM2,
+  calculatePrecoMedioUH,
+  calculateVSO,
+  calculateEntidadeResultados,
+  validatePAvsReal,
+  calculateQualityScore
+} from './financial-calculations';
 
 export function calculateKPIs(data: DadosMensais[], selectedMonth: string, showAccumulated: boolean) {
   if (!data || data.length === 0) {

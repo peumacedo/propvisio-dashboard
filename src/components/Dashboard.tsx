@@ -307,10 +307,11 @@ export function Dashboard() {
           </TabsContent>
 
           <TabsContent value="enhanced" className="space-y-8">
-            <EnhancedKPICards 
-              data={data} 
-              selectedMonth={filters.selectedMonth} 
-            />
+        {/* Enhanced KPI Cards */}
+        <EnhancedKPICards 
+          data={data} 
+          selectedMonth={filters.selectedMonth}
+        />
           </TabsContent>
 
           <TabsContent value="patrimonial" className="space-y-8">
