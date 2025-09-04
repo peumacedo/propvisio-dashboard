@@ -14,6 +14,7 @@ import { EnhancedVersionComparison } from '@/components/EnhancedVersionCompariso
 import { EnhancedKPICards } from '@/components/EnhancedKPICards';
 import { PatrimonialPosition } from '@/components/PatrimonialPosition';
 import { HoldingPanel } from '@/components/HoldingPanel';
+import { GovernancePanel } from '@/components/GovernancePanel';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -30,7 +31,8 @@ import {
   BarChart3,
   PieChart,
   Target,
-  Building2
+  Building2,
+  FileText
 } from 'lucide-react';
 import { 
   calculateKPIs, 
@@ -186,7 +188,7 @@ export function Dashboard() {
 
       <div className="container mx-auto px-4 py-8 space-y-8">
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-6 mb-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Dashboard Principal
@@ -206,6 +208,10 @@ export function Dashboard() {
             <TabsTrigger value="holding" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               Visão Holding
+            </TabsTrigger>
+            <TabsTrigger value="governance" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Governança
             </TabsTrigger>
           </TabsList>
 
@@ -330,6 +336,10 @@ export function Dashboard() {
 
           <TabsContent value="holding" className="space-y-8">
             <HoldingPanel projects={dataHistory} />
+          </TabsContent>
+
+          <TabsContent value="governance" className="space-y-8">
+            <GovernancePanel />
           </TabsContent>
         </Tabs>
       </div>
